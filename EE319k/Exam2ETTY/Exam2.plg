@@ -1,0 +1,55 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+C:\Users\ry2333\Google Drive\EE319K\S17\Exam2-StudentVersion\Exam2.uvproj
+Project File Date:  03/31/2017
+
+<h2>Output:</h2>
+  
+Warning: *** SUPPORT EXPIRED, NEW PRODUCT SERIAL NUMBER REQUIRED ***
+         *** Running with Code Size Limit: 32K                   ***
+Rebuild target 'Exam2'
+assembling Startup.s...
+assembling Exam2AsmPart.s...
+compiling Exam2CPart.c...
+linking...
+Program Size: Code=2728 RO-data=8964 RW-data=12 ZI-data=2148  
+".\Exam2.axf" - 0 Errors, 0 Warning(s).
+Clean started: Project: 'Exam2'
+   deleting intermediate output files for target 'Exam2'
+  
+Warning: *** SUPPORT EXPIRED, NEW PRODUCT SERIAL NUMBER REQUIRED ***
+         *** Running with Code Size Limit: 32K                   ***
+Rebuild target 'Exam2'
+assembling Startup.s...
+assembling Exam2AsmPart.s...
+compiling Exam2CPart.c...
+linking...
+Program Size: Code=2728 RO-data=8964 RW-data=12 ZI-data=2148  
+".\Exam2.axf" - 0 Errors, 0 Warning(s).
+  
+Warning: *** SUPPORT EXPIRED, NEW PRODUCT SERIAL NUMBER REQUIRED ***
+         *** Running with Code Size Limit: 32K                   ***
+Rebuild target 'Exam2'
+assembling Startup.s...
+assembling Exam2AsmPart.s...
+compiling Exam2CPart.c...
+linking...
+Program Size: Code=2728 RO-data=8964 RW-data=12 ZI-data=2148  
+".\Exam2.axf" - 0 Errors, 0 Warning(s).
+Clean started: Project: 'Exam2'
+   deleting intermediate output files for target 'Exam2'
+  
+Warning: *** SUPPORT EXPIRED, NEW PRODUCT SERIAL NUMBER REQUIRED ***
+         *** Running with Code Size Limit: 32K                   ***
+Rebuild target 'Exam2'
+assembling Startup.s...
+assembling Exam2AsmPart.s...
+compiling Exam2CPart.c...
+linking...
+Program Size: Code=2728 RO-data=8964 RW-data=12 ZI-data=2148  
+".\Exam2.axf" - 0 Errors, 0 Warning(s).
+Clean started: Project: 'Exam2'
+   deleting intermediate output files for target 'Exam2'

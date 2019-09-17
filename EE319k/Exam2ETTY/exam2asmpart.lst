@@ -1,0 +1,194 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ;Exam2AsmPart.s
+    2 00000000         ; This is the assembly Part of the Exam (See Exam2CPart.
+                       c for the C part)
+    3 00000000         ; You have to complete two subroutines related to the FS
+                       M here:
+    4 00000000         ; Convert2Index
+    5 00000000         ; ChangeState
+    6 00000000                 AREA             |.text|, CODE, READONLY, ALIGN=
+2
+    7 00000000                 THUMB
+    8 00000000                 IMPORT           FSM         ; FSM state array 
+    9 00000000                 EXPORT           ChangeState
+   10 00000000                 EXPORT           Convert2Index
+   11 00000000         ;******** Convert2Index **********
+   12 00000000         ; Convert the char input R,G,B to an index 0,1,2
+   13 00000000         ; Input: The first passed parameter has char 'R', 'G', o
+                       r 'B'
+   14 00000000         ; Output: Return the corresponding value 0, 1, or 2 
+   15 00000000         ; Errors: Any input that is not R,G, or B must return 25
+                       5.
+   16 00000000         ; Notes: R, G, and B have ASCII values 0x52, 0x47, and 0
+                       x42 respectively
+   17 00000000         ; TestCases:
+   18 00000000         ; 1. Input is 'R' - Expected Output is 0
+   19 00000000         ; 2. Input is 'G' - Expected Output is 1
+   20 00000000         ; 3. Input is 'B' - Expected Output is 2
+   21 00000000         ; 4. Input is 'X' - Expected Output is 0xFF
+   22 00000000         Convert2Index
+   23 00000000 2852            CMP              R0,#0X52    ;
+   24 00000002 D006            BEQ              RED         ;
+   25 00000004 2847            CMP              R0,#0X47    ;
+   26 00000006 D007            BEQ              GREEN       ;
+   27 00000008 2842            CMP              R0,#0X42    ;
+   28 0000000A D008            BEQ              BLUE        ;
+   29 0000000C         
+   30 0000000C F04F 00FF       MOV              R0,#255     ;
+   31 00000010 E008            B                CONVERTDONE ;
+   32 00000012         RED
+   33 00000012 F04F 0000       MOV              R0,#0       ;
+   34 00000016 E005            B                CONVERTDONE ;
+   35 00000018         GREEN
+   36 00000018 F04F 0001       MOV              R0,#1       ;
+   37 0000001C E002            B                CONVERTDONE ;
+   38 0000001E         BLUE
+   39 0000001E F04F 0002       MOV              R0,#2       ;
+   40 00000022 E7FF            B                CONVERTDONE ;
+   41 00000024         
+   42 00000024         
+   43 00000024         
+   44 00000024         CONVERTDONE
+   45 00000024         ; Replace this line with your solution (multiple lines)
+   46 00000024 4770            BX               LR
+   47 00000026         
+   48 00000026         ;******** ChangeState **********
+   49 00000026         ; Change State based on current state and input
+   50 00000026         ; Inputs: Input 1 is address of the current state variab
+                       le (unsigned 32-bit)
+   51 00000026         ;         Input 2 is the input value (unsigned 32-bit)
+   52 00000026         ; Outputs: None
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   53 00000026         ; Notes: The current state whose address is passed has t
+                       o be updated to the new state
+   54 00000026         ;        This function uses call-by-reference for its fi
+                       rst parameter.
+   55 00000026         ;        Make sure to fix the FSM translation before att
+                       empting this subroutine    
+   56 00000026         ; Testcases:
+   57 00000026         ;   All 12 combinations of state and input are checked a
+                       s test cases
+   58 00000026         ChangeState
+   59 00000026         ;    ADD R0,#8;   SKIP THE OUT AND THE WAIT THINGS AND G
+                       O TO THE ARRAY OF NEXT STATES
+   60 00000026 B41E            PUSH             {R1-R4}
+   61 00000028 F100 0008       ADD              R0,#8       ; 
+   62 0000002C F04F 0404       MOV              R4,#0x4     ;
+   63 00000030 FB01 F104       MUL              R1,R1,R4    ; MULTIPLY BY 4 SIN
+                                                            CE THEY ARE 32 BIT 
+                                                            VALUES
+   64 00000034 4408            ADD              R0,R0,R1    ; ADD THE OFFSET OF
+                                                             THE ARRAY TO GET N
+                                                            EXT STATE POINTER
+   65 00000036         ; LDR R0,[R0];
+   66 00000036         
+   67 00000036 BC1E            POP              {R1-R4}
+   68 00000038         
+   69 00000038         
+   70 00000038 4770            BX               LR
+   71 0000003A 00 00           ALIGN                        ; make sure the end
+                                                             of this section is
+                                                             aligned
+   72 0000003C                 END                          ; end of file
+Command Line: --debug --xref --cpu=Cortex-M3 --apcs=interwork --depend=.\exam2a
+smpart.d -o.\exam2asmpart.o -IC:\Keil\ARM\RV31\INC -IC:\Keil\ARM\CMSIS\Include 
+-IC:\Keil\ARM\Inc\Luminary --predefine="__EVAL SETA 1" --list=.\exam2asmpart.ls
+t Exam2AsmPart.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 6 in file Exam2AsmPart.s
+   Uses
+      None
+Comment: .text unused
+BLUE 0000001E
+
+Symbol: BLUE
+   Definitions
+      At line 38 in file Exam2AsmPart.s
+   Uses
+      At line 28 in file Exam2AsmPart.s
+Comment: BLUE used once
+CONVERTDONE 00000024
+
+Symbol: CONVERTDONE
+   Definitions
+      At line 44 in file Exam2AsmPart.s
+   Uses
+      At line 31 in file Exam2AsmPart.s
+      At line 34 in file Exam2AsmPart.s
+      At line 37 in file Exam2AsmPart.s
+      At line 40 in file Exam2AsmPart.s
+
+ChangeState 00000026
+
+Symbol: ChangeState
+   Definitions
+      At line 58 in file Exam2AsmPart.s
+   Uses
+      At line 9 in file Exam2AsmPart.s
+Comment: ChangeState used once
+Convert2Index 00000000
+
+Symbol: Convert2Index
+   Definitions
+      At line 22 in file Exam2AsmPart.s
+   Uses
+      At line 10 in file Exam2AsmPart.s
+Comment: Convert2Index used once
+GREEN 00000018
+
+Symbol: GREEN
+   Definitions
+      At line 35 in file Exam2AsmPart.s
+   Uses
+      At line 26 in file Exam2AsmPart.s
+Comment: GREEN used once
+RED 00000012
+
+Symbol: RED
+   Definitions
+      At line 32 in file Exam2AsmPart.s
+   Uses
+      At line 24 in file Exam2AsmPart.s
+Comment: RED used once
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Relocatable symbols
+
+7 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+FSM 00000000
+
+Symbol: FSM
+   Definitions
+      At line 8 in file Exam2AsmPart.s
+   Uses
+      None
+Comment: FSM unused
+1 symbol
+339 symbols in table

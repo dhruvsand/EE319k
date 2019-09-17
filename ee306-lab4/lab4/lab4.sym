@@ -1,0 +1,32 @@
+//Symbol Name		Page Address
+//----------------	------------
+//	ASCII0                  311D
+//	ASCIIA                  311A
+//	ASCIIB                  311B
+//	ASCIIC                  311C
+//	END                     306E
+//	INPUT                   302F
+//	INVALID                 30E3
+//	INVALIDLOOP             3046
+//	LOOP1                   3008
+//	LOOP2                   3013
+//	LOOP3                   301E
+//	NEWLINE                 306F
+//	PLAYER1PROMPT           3089
+//	PLAYER1WINS             30FC
+//	PLAYER2PROMPT           30B6
+//	PLAYER2WINS             310B
+//	PLAYERCHOOSE            3024
+//	ROCK                    3070
+//	ROCKCALCULATE           304B
+//	ROWA                    3071
+//	ROWB                    3078
+//	ROWC                    307F
+//	SKIPROCKA               300E
+//	SKIPROCKB               3019
+//	START                   3001
+//	TURN2                   302B
+//	VALUEA                  3086
+//	VALUEB                  3087
+//	VALUEC                  3088
+//	WIN2                    3068

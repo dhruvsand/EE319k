@@ -1,0 +1,7 @@
+Dependencies for Project 'Exam2', Target 'Exam2': (DO NOT MODIFY !)
+F (.\Startup.s)(0x58E68EFA)(--cpu Cortex-M3 --pd "__EVAL SETA 1" -g --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary--list .\startup.lst --xref -o .\startup.o --depend .\startup.d)
+F (.\Exam2.c)(0x58E69EFB)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork --signed_chars --C99-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary-o .\exam2.o --omf_browse .\exam2.crf --depend .\exam2.d)
+I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C88A34)
+F (.\pll.o)(0x58E68EFA)()
+F (.\uart.o)(0x58E68EFA)()
+F (.\main.o)(0x58E68EFA)()

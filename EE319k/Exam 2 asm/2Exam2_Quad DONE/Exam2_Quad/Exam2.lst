@@ -1,0 +1,143 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ;This is Exam2_Quad
+    2 00000000         ; DHRUV SANDESARA
+    3 00000000         ; 35 MINS
+    4 00000000         ;Your name goes here
+    5 00000000         ;You edit this file only
+    6 00000000                 AREA             |.text|, CODE, READONLY, ALIGN=
+2
+    7 00000000                 THUMB
+    8 00000000         ;***** Pow4 subroutine*********************
+    9 00000000         ;Inputs:  Input1: R0 contains an quad number (range: 0-3
+                       ).
+   10 00000000         ;         Input2: R1 contains a number between 0 and 3 
+   11 00000000         ;Output:  R0 contains the result of multiplying Input1 w
+                       ith 4^Input2
+   12 00000000         ;         R0 = R0*(4^R1)
+   13 00000000         ;Invariables: You must not modify registers R4 to R11
+   14 00000000         ;Error conditions: none
+   15 00000000         ;test case 0: R0=1; R1=2  => R0= 1*(4^2) = 16
+   16 00000000         ;test case 1: R0=3; R1=3  => R0 = 3*(4^3) = 192
+   17 00000000         ;test case 2: R0=3; R1=0  => R0 = 2*(4^0) = 3
+   18 00000000         ;test case 3: R0=0; R1=3  => R0 = 0*(4^3) = 0 
+   19 00000000                 EXPORT           Pow4
+   20 00000000         Pow4
+   21 00000000         ; put your code here
+   22 00000000 B43C            PUSH             {R2-R5}     ;
+   23 00000002 F04F 0204       MOV              R2,#4       ; remove this line
+   24 00000006 F101 31FF       ADD              R1,#-1      ;
+   25 0000000A 2900            CMP              R1,#0       ;
+   26 0000000C DB06            BLT              DONE1       ;
+   27 0000000E FA02 F201       LSL              R2,R2,R1    ;
+   28 00000012 FA02 F201       LSL              R2,R2,R1    ;
+   29 00000016 FB02 F200       MUL              R2,R2,R0
+   30 0000001A 4610            MOV              R0,R2       ;
+   31 0000001C         
+   32 0000001C         DONE1
+   33 0000001C BC3C            POP              {R2-R5}
+   34 0000001E 4770            BX               LR
+   35 00000020         
+   36 00000020         ;***** QuadDec subroutine *********************
+   37 00000020         ;Inputs: R0 contains the address of a 4-element Array of
+                        quad numbers (range: 0-3)  
+   38 00000020         ;Output: R0 contains the decimal value corresponding to 
+                       the quad number in input
+   39 00000020         ;Invariables: You must not modify registers R4 to R11
+   40 00000020         ;test case 0: 0,1,2,3          => R0=27
+   41 00000020         ;test case 1: 0,0,0,3     => R0=3
+   42 00000020         ;test case 2: 1,1,1,1     => R0=87
+   43 00000020         ;test case 3: 3,3,3,3     => R0=255
+   44 00000020         ;test case 4: 3,3,0,0     => R0=240 
+   45 00000020         ;test case 5: 0,0,0,0     => R0=0 
+   46 00000020                 EXPORT           QuadDec
+   47 00000020         QuadDec
+   48 00000020         ; put your code here
+   49 00000020         
+   50 00000020 E92D 01FE       PUSH             {R1-R8}     ;
+   51 00000024 F04F 0204       MOV              R2,#4       ;
+   52 00000028 F04F 0340       MOV              R3,#64      ;
+   53 0000002C F04F 0400       MOV              R4,#0       ;
+   54 00000030 F04F 0500       MOV              R5,#0       ;
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   55 00000034         LOOP
+   56 00000034 7801            LDRB             R1,[R0]     ;
+   57 00000036 FB01 F403       MUL              R4,R1,R3    ;
+   58 0000003A 4425            ADD              R5,R5,R4    ;
+   59 0000003C F102 32FF       ADD              R2,#-1      ;
+   60 00000040 F100 0001       ADD              R0,#1       ;
+   61 00000044 EA4F 0393       LSR              R3,#2       ;
+   62 00000048 2A00            CMP              R2,#0       ;
+   63 0000004A D1F3            BNE              LOOP        ;
+   64 0000004C 4628            MOV              R0,R5       ;
+   65 0000004E         
+   66 0000004E         
+   67 0000004E         
+   68 0000004E         
+   69 0000004E         
+   70 0000004E E8BD 01FE       POP{R1-R8}                   ;
+   71 00000052         
+   72 00000052 4770            BX               LR
+   73 00000054         
+   74 00000054                 ALIGN
+   75 00000054                 END
+Command Line: --debug --xref --cpu=Cortex-M3 --apcs=interwork --depend=.\exam2.
+d -o.\exam2.o -IC:\Keil\ARM\RV31\INC -IC:\Keil\ARM\CMSIS\Include -IC:\Keil\ARM\
+Inc\Luminary --predefine="__EVAL SETA 1" --list=.\exam2.lst Exam2.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 6 in file Exam2.s
+   Uses
+      None
+Comment: .text unused
+DONE1 0000001C
+
+Symbol: DONE1
+   Definitions
+      At line 32 in file Exam2.s
+   Uses
+      At line 26 in file Exam2.s
+Comment: DONE1 used once
+LOOP 00000034
+
+Symbol: LOOP
+   Definitions
+      At line 55 in file Exam2.s
+   Uses
+      At line 63 in file Exam2.s
+Comment: LOOP used once
+Pow4 00000000
+
+Symbol: Pow4
+   Definitions
+      At line 20 in file Exam2.s
+   Uses
+      At line 19 in file Exam2.s
+Comment: Pow4 used once
+QuadDec 00000020
+
+Symbol: QuadDec
+   Definitions
+      At line 47 in file Exam2.s
+   Uses
+      At line 46 in file Exam2.s
+Comment: QuadDec used once
+5 symbols
+336 symbols in table

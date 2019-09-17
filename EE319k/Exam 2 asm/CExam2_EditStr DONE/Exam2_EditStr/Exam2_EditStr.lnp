@@ -1,0 +1,10 @@
+--cpu Cortex-M4
+".\uart.o"
+".\exam2.o"
+".\exam2asm.o"
+".\startup.o"
+".\main.o"
+--strict --scatter ".\Exam2_EditStr.sct"
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Exam2_EditStr.map" -o .\Exam2_EditStr.axf

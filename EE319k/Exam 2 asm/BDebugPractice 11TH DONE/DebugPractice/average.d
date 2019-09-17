@@ -1,0 +1,1 @@
+.\average.o: average.s

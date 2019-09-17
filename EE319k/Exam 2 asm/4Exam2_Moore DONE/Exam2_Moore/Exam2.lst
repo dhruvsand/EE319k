@@ -1,0 +1,389 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000         ;This is Exam2_Moore
+    2 00000000         ;Your name goes here
+    3 00000000         ;You edit this file only
+    4 00000000                 AREA             Data
+    5 00000000         ; your globals go here
+    6 00000000         
+    7 00000000         
+    8 00000000                 AREA             |.text|, CODE, READONLY, ALIGN=
+2
+    9 00000000                 THUMB
+   10 00000000         ;use these definitions (Port V is not a real Port)
+   11 00000000 40007404 
+                       GPIO_PORTV_DATA_R
+                               EQU              0x40007404
+   12 00000000 40007400 
+                       GPIO_PORTV_DIR_R
+                               EQU              0x40007400
+   13 00000000 40007420 
+                       GPIO_PORTV_AFSEL_R
+                               EQU              0x40007420
+   14 00000000 4000751C 
+                       GPIO_PORTV_DEN_R
+                               EQU              0x4000751C
+   15 00000000 400FE108 
+                       SYSCTL_RCGC2_R
+                               EQU              0x400FE108
+   16 00000000 00200000 
+                       SYSCTL_RCGC2_GPIOV
+                               EQU              0x00200000  ; port V Clock Gati
+                                                            ng Control
+   17 00000000         ; ********* YourFSMInit ***************
+   18 00000000         ; Part a) put your initialization here
+   19 00000000         ;modify this function so it initializes the direction re
+                       gister of Port V, be friendly
+   20 00000000         ;PV6,PV5,PV4 are outputs 
+   21 00000000         ;PV3,PV1 are inputs
+   22 00000000         ;initialize global variables 
+   23 00000000         ;initial state is Stop
+   24 00000000         ;Invariables: You must not permanently modify registers 
+                       R4 to R11
+   25 00000000         ;Error conditions: none
+   26 00000000                 EXPORT           YourFSMInit
+   27 00000000         YourFSMInit
+   28 00000000 492F            LDR              R1, =SYSCTL_RCGC2_R 
+                                                            ; Clock register
+   29 00000002 6808            LDR              R0, [R1]
+   30 00000004 F440 1000       ORR              R0, R0, #SYSCTL_RCGC2_GPIOV 
+                                                            ; clock to Port V
+   31 00000008 6008            STR              R0, [R1]
+   32 0000000A BF00            NOP
+   33 0000000C BF00            NOP                          ; allow time to fin
+                                                            ish activating
+   34 0000000E         ; regular port function
+   35 0000000E 492D            LDR              R1, =GPIO_PORTV_AFSEL_R ; Alter
+                                                            native function reg
+                                                            ister
+   36 00000010 6808            LDR              R0, [R1]
+   37 00000012 F020 007A       BIC              R0, R0, #0x7A ; PV6,PV5,PV4,PV3
+                                                            ,PV1 disable alt fu
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+                                                            nct 
+   38 00000016 6008            STR              R0, [R1]
+   39 00000018         ; enable digital port
+   40 00000018 492B            LDR              R1, =GPIO_PORTV_DEN_R ; data en
+                                                            able register
+   41 0000001A 6808            LDR              R0, [R1]
+   42 0000001C F040 007A       ORR              R0, R0, #0x7A ; PV6,PV5,PV4,PV3
+                                                            ,PV1 enable digital
+                                                             I/O 
+   43 00000020 6008            STR              R0, [R1]
+   44 00000022         ; put your code here
+   45 00000022 492A            LDR              R1,=GPIO_PORTV_DIR_R
+   46 00000024 6808            LDR              R0,[R1]     ;
+   47 00000026 F040 0070       ORR              R0,R0,#0X70 ;
+   48 0000002A F020 000A       BIC              R0,R0,#0XA  ;
+   49 0000002E 6008            STR              R0,[R1]
+   50 00000030         
+   51 00000030         
+   52 00000030 4770            BX               LR
+   53 00000032         
+   54 00000032         ;*********YourFSMOutput*********************
+   55 00000032         ; Part b) 3-bit output to Port V, be friendly
+   56 00000032         ; Input: call by value in Reg R0 (0 to 7)
+   57 00000032         ; Do not change the values of PV7,3,2,1,0
+   58 00000032         ; There are 8 possibilities
+   59 00000032         ;  R0  |  PV6 PV5 PV4
+   60 00000032         ;   0  |   0   0   0
+   61 00000032         ;   1  |   0   0   1
+   62 00000032         ;   2  |   0   1   0
+   63 00000032         ;   3  |   0   1   1
+   64 00000032         ;   4  |   1   0   0
+   65 00000032         ;   5  |   1   0   1
+   66 00000032         ;   6  |   1   1   0
+   67 00000032         ;   7  |   1   1   1
+   68 00000032         ;Invariables: You must not permanently modify registers 
+                       R4 to R11
+   69 00000032         ;Error conditions: none
+   70 00000032                 EXPORT           YourFSMOutput
+   71 00000032         YourFSMOutput
+   72 00000032         ; put your code here
+   73 00000032 B41E            PUSH             {R1-R4}
+   74 00000034 4926            LDR              R1,=GPIO_PORTV_DATA_R
+   75 00000036 680A            LDR              R2,[R1]     ;
+   76 00000038 F002 028F       AND              R2,R2,#0X8F ;
+   77 0000003C EA4F 1000       LSL              R0,R0,#4    ;
+   78 00000040 EA42 0200       ORR              R2,R2,R0    ;
+   79 00000044 600A            STR              R2,[R1]     ;
+   80 00000046 BC1E            POP              {R1-R4}
+   81 00000048         
+   82 00000048 4770            BX               LR
+   83 0000004A         
+   84 0000004A         ;**********YourFSMInput****************
+   85 0000004A         ; Part c) 2-bit input from Port V bits PV3 PV1
+   86 0000004A         ; Input: none
+   87 0000004A         ; Output: return by value in Reg R0 (0 to 3)
+   88 0000004A         ; PV3 PV1 | R0 
+   89 0000004A         ;  0   0  | 0
+   90 0000004A         ;  0   1  | 1
+   91 0000004A         ;  1   0  | 2
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+   92 0000004A         ;  1   1  | 3
+   93 0000004A         ;Invariables: You must not permanently modify registers 
+                       R4 to R11
+   94 0000004A         ;Error conditions: none
+   95 0000004A                 EXPORT           YourFSMInput
+   96 0000004A         YourFSMInput
+   97 0000004A         ; put your code here
+   98 0000004A B41E            PUSH             {R1-R4}
+   99 0000004C 4920            LDR              R1,=GPIO_PORTV_DATA_R
+  100 0000004E 680A            LDR              R2,[R1]     ;
+  101 00000050 F002 020F       AND              R2,R2,#0X0F ;
+  102 00000054 4613            MOV              R3,R2       ;
+  103 00000056 F022 0207       BIC              R2,R2,#0X7  ;
+  104 0000005A EA4F 0292       LSR              R2,R2,#2    ;
+  105 0000005E F04F 0000       MOV              R0,#0       ;
+  106 00000062 4410            ADD              R0,R2       ;
+  107 00000064 F023 030D       BIC              R3,R3,#0XD  ;
+  108 00000068 EA4F 0353       LSR              R3,R3,#1    ;
+  109 0000006C 4418            ADD              R0,R0,R3    ;
+  110 0000006E         
+  111 0000006E         
+  112 0000006E BC1E            POP              {R1-R4}
+  113 00000070         
+  114 00000070 4770            BX               LR
+  115 00000072         
+  116 00000072         ;  put your graph data structure here
+  117 00000072         
+  118 00000072         FSM
+  119 00000072 02 01 00 
+              01 00            DCB              2, 1,0,1,0  ;
+  120 00000077 03 01 02 
+              02 01            DCB              3, 1,2,2,1  ;
+  121 0000007C 04 00 01 
+              00 02            DCB              4, 0,1,0,2  ;
+  122 00000081 00 00 00        ALIGN            4
+  123 00000084         
+  124 00000084                 EXPORT           YourFSMController
+  125 00000084                 IMPORT           MyGrader
+  126 00000084         YourFSMController
+  127 00000084         ;your initialization
+  128 00000084 F7FF FFFE       BL               YourFSMInit
+  129 00000088 E92D 01FE       PUSH             {R1-R8}
+  130 0000008C 4C11            LDR              R4,=FSM     ; R1 IS THE TOP OF 
+                                                            THE LABEL
+  131 0000008E F04F 0500       MOV              R5,#0       ; R2 WILL BE OUR DE
+                                                            LTA
+  132 00000092         
+  133 00000092         loop
+  134 00000092 F7FF FFFE       BL               MyGrader    ;do not move or rem
+                                                            ove this line
+  135 00000096         ; Part d) put your output-input-next engine here
+  136 00000096         ;the Grader will check outputs and make inputs happen
+  137 00000096         ;1. output to PTV bits 6,4,3 (be friendly)
+  138 00000096         ;2. input from PTV bits 3,1
+  139 00000096         ;3. next
+  140 00000096 4C0F            LDR              R4,=FSM     ;
+  141 00000098 F04F 0100       MOV              R1,#0       ;
+  142 0000009C F04F 0605       MOV              R6,#5       ;
+  143 000000A0 FB05 F506       MUL              R5,R5,R6    ;
+
+
+
+ARM Macro Assembler    Page 4 
+
+
+  144 000000A4 EB04 0105       ADD              R1,R4,R5    ;
+  145 000000A8 7808            LDRB             R0,[R1]     ; THIS FIST ACCESS 
+                                                            IS THE OUTPUT
+  146 000000AA F7FF FFFE       BL               YourFSMOutput ;
+  147 000000AE F7FF FFFE       BL               YourFSMInput ; GET THE INPUTS I
+                                                            N R0;
+  148 000000B2 4605            MOV              R5,R0       ; R5 NOW HAS THE DE
+                                                            LTA
+  149 000000B4 4429            ADD              R1,R1,R5    ;
+  150 000000B6 F101 0101       ADD              R1,R1,#1    ;
+  151 000000BA 780D            LDRB             R5,[R1]     ;
+  152 000000BC         
+  153 000000BC         
+  154 000000BC         
+  155 000000BC E7E9            B                loop        ;do not remove this
+                                                             line
+  156 000000BE         
+  157 000000BE 00 00           ALIGN
+  158 000000C0                 END
+              400FE108 
+              40007420 
+              4000751C 
+              40007400 
+              40007404 
+              00000000 
+Command Line: --debug --xref --cpu=Cortex-M3 --apcs=interwork --depend=.\exam2.
+d -o.\exam2.o -IC:\Keil\ARM\RV31\INC -IC:\Keil\ARM\CMSIS\Include -IC:\Keil\ARM\
+Inc\Luminary --predefine="__EVAL SETA 1" --list=.\exam2.lst Exam2.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+Data 00000000
+
+Symbol: Data
+   Definitions
+      At line 4 in file Exam2.s
+   Uses
+      None
+Comment: Data unused
+1 symbol
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.text 00000000
+
+Symbol: .text
+   Definitions
+      At line 8 in file Exam2.s
+   Uses
+      None
+Comment: .text unused
+FSM 00000072
+
+Symbol: FSM
+   Definitions
+      At line 118 in file Exam2.s
+   Uses
+      At line 130 in file Exam2.s
+      At line 140 in file Exam2.s
+
+YourFSMController 00000084
+
+Symbol: YourFSMController
+   Definitions
+      At line 126 in file Exam2.s
+   Uses
+      At line 124 in file Exam2.s
+Comment: YourFSMController used once
+YourFSMInit 00000000
+
+Symbol: YourFSMInit
+   Definitions
+      At line 27 in file Exam2.s
+   Uses
+      At line 26 in file Exam2.s
+      At line 128 in file Exam2.s
+
+YourFSMInput 0000004A
+
+Symbol: YourFSMInput
+   Definitions
+      At line 96 in file Exam2.s
+   Uses
+      At line 95 in file Exam2.s
+      At line 147 in file Exam2.s
+
+YourFSMOutput 00000032
+
+Symbol: YourFSMOutput
+   Definitions
+      At line 71 in file Exam2.s
+   Uses
+      At line 70 in file Exam2.s
+      At line 146 in file Exam2.s
+
+loop 00000092
+
+Symbol: loop
+   Definitions
+      At line 133 in file Exam2.s
+   Uses
+      At line 155 in file Exam2.s
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Relocatable symbols
+
+Comment: loop used once
+7 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Absolute symbols
+
+GPIO_PORTV_AFSEL_R 40007420
+
+Symbol: GPIO_PORTV_AFSEL_R
+   Definitions
+      At line 13 in file Exam2.s
+   Uses
+      At line 35 in file Exam2.s
+Comment: GPIO_PORTV_AFSEL_R used once
+GPIO_PORTV_DATA_R 40007404
+
+Symbol: GPIO_PORTV_DATA_R
+   Definitions
+      At line 11 in file Exam2.s
+   Uses
+      At line 74 in file Exam2.s
+      At line 99 in file Exam2.s
+
+GPIO_PORTV_DEN_R 4000751C
+
+Symbol: GPIO_PORTV_DEN_R
+   Definitions
+      At line 14 in file Exam2.s
+   Uses
+      At line 40 in file Exam2.s
+Comment: GPIO_PORTV_DEN_R used once
+GPIO_PORTV_DIR_R 40007400
+
+Symbol: GPIO_PORTV_DIR_R
+   Definitions
+      At line 12 in file Exam2.s
+   Uses
+      At line 45 in file Exam2.s
+Comment: GPIO_PORTV_DIR_R used once
+SYSCTL_RCGC2_GPIOV 00200000
+
+Symbol: SYSCTL_RCGC2_GPIOV
+   Definitions
+      At line 16 in file Exam2.s
+   Uses
+      At line 30 in file Exam2.s
+Comment: SYSCTL_RCGC2_GPIOV used once
+SYSCTL_RCGC2_R 400FE108
+
+Symbol: SYSCTL_RCGC2_R
+   Definitions
+      At line 15 in file Exam2.s
+   Uses
+      At line 28 in file Exam2.s
+Comment: SYSCTL_RCGC2_R used once
+6 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+MyGrader 00000000
+
+Symbol: MyGrader
+   Definitions
+      At line 125 in file Exam2.s
+   Uses
+      At line 134 in file Exam2.s
+Comment: MyGrader used once
+1 symbol
+348 symbols in table

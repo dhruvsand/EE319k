@@ -1,0 +1,9 @@
+--cpu Cortex-M4
+".\average.o"
+".\startup.o"
+".\uart.o"
+".\main.o"
+--strict --scatter ".\DebugPractice.sct"
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\DebugPractice.map" -o .\DebugPractice.axf

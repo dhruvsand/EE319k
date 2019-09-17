@@ -1,0 +1,6 @@
+Dependencies for Project 'Exam2_BCD', Target 'Exam2': (DO NOT MODIFY !)
+F (.\Startup.s)(0x58E1A0E6)(--cpu Cortex-M3 --pd "__EVAL SETA 1" -g --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary--list .\startup.lst --xref -o .\startup.o --depend .\startup.d)
+F (.\Exam2.s)(0x58E3F6EE)(--cpu Cortex-M3 --pd "__EVAL SETA 1" -g --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary--list .\exam2.lst --xref -o .\exam2.o --depend .\exam2.d)
+F (.\main.o)(0x58E1A0E6)()
+F (.\pll.o)(0x58E1A0E6)()
+F (.\uart.o)(0x58E1A0E6)()

@@ -1,0 +1,519 @@
+;****************** main.s ***************
+; Program written by: put your names here
+; Date Created: 8/25/2013 
+; Last Modified: 2/24/2015 
+; Section 1-2pm     TA: Youngchun Kim
+; Lab number: 5
+; Brief description of the program
+;   A traffic light controller with 3 inputs and 8 output
+; Hardware connections
+;The “don’t walk” and “walk” lights must be PF1 and PF3 respectively, but where to attach the others have some flexibility. 
+;Obviously, you will not connect both inputs and outputs to the same pin.
+
+;Red south       PA7    PB5    PE5
+;Yellow south    PA6    PB4    PE4
+;Green south     PA5    PB3    PE3
+;Red west        PA4    PB2    PE2
+;Yellow west     PA3    PB1    PE1
+;Green west      PA2    PB0    PE0
+;Table 5.1. Possible ports to interface the traffic lights (PF1=red don’t walk, PF3=green walk).
+
+;Walk sensor     PA4    PD2    PE2
+;South sensor    PA3    PD1    PE1
+;West sensor     PA2    PD0    PE0
+;Table 5.2. Possible ports to interface the sensors.
+SYSCTL_RCGC2_R			EQU 0x400FE108
+SYSCTL_RCGCGPIO_R       EQU 0x400FE608
+GPIO_PORTA_DATA_R       EQU 0x400043FC
+GPIO_PORTA_DIR_R        EQU 0x40004400
+GPIO_PORTA_AFSEL_R      EQU 0x40004420
+GPIO_PORTA_DEN_R        EQU 0x4000451C
+GPIO_PORTB_DATA_R       EQU 0x400053FC
+GPIO_PORTB_DIR_R        EQU 0x40005400
+GPIO_PORTB_AFSEL_R      EQU 0x40005420
+GPIO_PORTB_DEN_R        EQU 0x4000551C
+GPIO_PORTD_DATA_R       EQU 0x400073FC
+GPIO_PORTD_DIR_R        EQU 0x40007400
+GPIO_PORTD_AFSEL_R      EQU 0x40007420
+GPIO_PORTD_DEN_R        EQU 0x4000751C
+GPIO_PORTE_DATA_R       EQU 0x400243FC
+GPIO_PORTE_DIR_R        EQU 0x40024400
+GPIO_PORTE_AFSEL_R      EQU 0x40024420
+GPIO_PORTE_DEN_R        EQU 0x4002451C
+GPIO_PORTF_DATA_R       EQU 0x400253FC
+GPIO_PORTF_DIR_R        EQU 0x40025400
+GPIO_PORTF_AFSEL_R      EQU 0x40025420
+GPIO_PORTF_DEN_R        EQU 0x4002551C
+NVIC_ST_CURRENT_R       EQU 0xE000E018
+NVIC_ST_CTRL_R          EQU 0xE000E010
+NVIC_ST_RELOAD_R        EQU 0xE000E014
+GPIO_PORTE_AMSEL_R      EQU 0x40024528
+GPIO_PORTE_PCTL_R       EQU 0x4002452C
+GPIO_PORTB_AMSEL_R      EQU 0x40005528
+GPIO_PORTB_PCTL_R       EQU 0x4000552C
+GPIO_PORTF_AMSEL_R      EQU 0x40025528
+GPIO_PORTF_PCTL_R       EQU 0x4002552C	
+	
+NUMBER 					EQU 800000	
+	
+goN1   		EQU		0
+goN2   		EQU		1
+goN3		EQU		2
+waitN 		EQU		3
+stopN 	 	EQU 	4
+goE1		EQU  	5
+goE2	 	EQU		6
+goE3	 	EQU		7	
+waitE 		EQU		8
+stopE		EQU		9
+pOn			EQU		10
+pBlink1On	EQU 	11
+pBlink1Off	EQU 	12
+pBlink2On	EQU		13
+pBlink2Off	EQU		14	
+pBlink3On	EQU 	15
+pBlink3Off 	EQU 	16
+pBlink4On	EQU		17
+pBlink4Off	EQU		18	
+pStop		EQU		19	
+	
+
+
+
+      AREA   DATA, ALIGN=2
+		
+STRUCT
+	FILL 1,0; 0
+	FILL 1,0x21;1
+	FILL 1,0x2;2
+	FILL 1,200;3
+	FILL 1,goN2;4
+	FILL 1,goN1;5
+	FILL 1,goN2;6
+	FILL 1,goN2;7
+	FILL 1,goN2;8
+	FILL 1,goN2;9
+	FILL 1,goN2;10
+	FILL 1,goN2 ; 11
+    FILL 1,0x21;12
+	FILL 1,0x2;13
+	FILL 1,200;14
+	FILL 1,goN3;15
+	FILL 1,goN1;16
+	FILL 1,goN3;17
+	FILL 1,goN3;18
+	FILL 1,goN3;19
+	FILL 1,goN3;20
+	FILL 1,goN3;21
+	FILL 1,goN3 ; 22//goN2
+    FILL 1,0x21;23
+	FILL 1,0x2;24
+	FILL 1,100;25
+	FILL 1,waitN;26
+	FILL 1,goN1;27
+	FILL 1,waitN;28
+	FILL 1,waitN;29
+	FILL 1,waitN;30
+	FILL 1,waitN;31
+	FILL 1,waitN;32
+	FILL 1,waitN ; 33//goN3
+    FILL 1,0x22;34
+	FILL 1,0x2;35
+    FILL 1,200;36
+	FILL 1,stopN;37
+	FILL 1,goN1;38
+	FILL 1,stopN;39
+	FILL 1,stopN;40
+	FILL 1,stopN;41
+	FILL 1,stopN;42
+	FILL 1,stopN;43
+	FILL 1,stopN;44
+	FILL 1,0x24;45
+	FILL 1,0x2;46
+	FILL 1,200;47
+	FILL 1,goE1;48
+	FILL 1,goN1;49
+	FILL 1,goE1;50
+	FILL 1,goE1;51
+	FILL 1,pOn;52
+	FILL 1,pOn;53
+	FILL 1,goE1;54
+	FILL 1,goE1	;55							//stopN
+    FILL 1,0x0C;56
+	FILL 1,0x2;57
+	FILL 1,200;58
+	FILL 1,goE2;59
+	FILL 1,goE2;60
+	FILL 1,goE1;61
+	FILL 1,goE2;62
+	FILL 1,goE2;63
+	FILL 1,goE2;64
+	FILL 1,goE2;65
+	FILL 1,goE2 ; 66//goE1
+    FILL 1,0x0C;67
+	FILL 1,0x2;68
+	FILL 1,200;69
+	FILL 1,goE3;70
+	FILL 1,goE3;71
+	FILL 1,goE1;72
+	FILL 1,goE3;73
+	FILL 1,goE3;74
+	FILL 1,goE3;75
+	FILL 1,goE3;76
+	FILL 1,goE3 ; 77//goE2 
+    FILL 1,0x0C;78
+	FILL 1,0x2;79
+	FILL 1,100;80
+	FILL 1,waitE;81
+	FILL 1,waitE;82
+	FILL 1,goE1;83
+	FILL 1,waitE;84
+	FILL 1,waitE;85
+	FILL 1,waitE;86
+	FILL 1,waitE;87
+	FILL 1,waitE ;88//goE3
+    FILL 1,0x14;89
+	FILL 1,0x2;90
+	FILL 1,200;91
+	FILL 1,stopE;92
+	FILL 1,stopE;93
+	FILL 1,goE1;94
+	FILL 1,stopE;95
+	FILL 1,stopE;96
+	FILL 1,stopE;97
+	FILL 1,stopE;98
+	FILL 1,stopE ; 99//waitE
+    FILL 1,0x24;100
+	FILL 1,0x2 ;101
+	FILL 1,200;102
+	FILL 1,pOn;103
+	FILL 1,goN1;104
+	FILL 1,goE1;105
+	FILL 1,goN1;106
+	FILL 1,pOn;107
+	FILL 1,pOn;108
+	FILL 1,pOn;109
+	FILL 1,pOn	;110						//stopE
+    FILL 1,0x24;111
+	FILL 1,0x8 ;112
+	FILL 1,200;113
+	FILL 1,pBlink1On;114
+	FILL 1,pBlink1On;115
+	FILL 1,pBlink1On;116
+	FILL 1,pBlink1On;117
+	FILL 1,pOn;118
+	FILL 1,pBlink1On;119
+	FILL 1,pBlink1On;120
+	FILL 1,pBlink1On;121 //pOn
+    FILL 1,0x24;122
+	FILL 1,0x2;123
+	FILL 1,30;124
+	FILL 1,pBlink1Off;125
+	FILL 1,pBlink1Off;126
+	FILL 1,pBlink1Off;127
+	FILL 1,pBlink1Off;128
+	FILL 1,pOn;		129
+	FILL 1,pBlink1Off;130
+	FILL 1,pBlink1Off;131
+	FILL 1,pBlink1Off ;132 //pBlink1On
+    FILL 1,0x24;133
+	FILL 1,0x0;134
+	FILL 1,30;135
+	FILL 1,pBlink2On;136
+	FILL 1,pBlink2On;137
+	FILL 1,pBlink2On;138
+	FILL 1,pBlink2On;139
+	FILL 1,pOn;140
+	FILL 1,pBlink2On;141
+	FILL 1,pBlink2On;142
+	FILL 1,pBlink2On;143  //pBlink1Off
+    FILL 1,0x24;144
+	FILL 1,0x2;145
+	FILL 1,30;146
+	FILL 1,pBlink2Off;147
+	FILL 1,pBlink2Off;148
+	FILL 1,pBlink2Off;149
+	FILL 1,pBlink2Off;150
+	FILL 1,pOn;151
+	FILL 1,pBlink2Off;152
+	FILL 1,pBlink2Off;153
+	FILL 1,pBlink2Off;154 //pBlink2On
+    FILL 1,0x24;155
+	FILL 1,0x0;156
+	FILL 1,30;157
+	FILL 1,pBlink3On;158
+	FILL 1,pBlink3On;159
+	FILL 1,pBlink3On;160
+	FILL 1,pBlink3On;161
+	FILL 1,pOn;162
+	FILL 1,pBlink3On;163
+	FILL 1,pBlink3On;164
+	FILL 1,pBlink3On;165 //pBlink2Off
+    FILL 1,0x24;166
+	FILL 1,0x2;167
+    FILL 1,30;168
+	FILL 1,pBlink3Off;169
+	FILL 1,pBlink3Off;170
+	FILL 1,pBlink3Off;171
+	FILL 1,pBlink3Off;172
+	FILL 1,pOn;173
+	FILL 1,pBlink3Off;174
+	FILL 1,pBlink3Off;175
+	FILL 1,pBlink3Off;176 //pBlink3On
+    FILL 1,0x24;177
+	FILL 1,0x0;178
+	FILL 1,30;179
+	FILL 1,pBlink4On;180
+	FILL 1,pBlink4On;181
+	FILL 1,pBlink4On;182
+	FILL 1,pBlink4On;183
+	FILL 1,pOn;184
+	FILL 1,pBlink4On;185
+	FILL 1,pBlink4On;186
+	FILL 1,pBlink4On;187 //pBlink3Off
+    FILL 1,0x24;188
+	FILL 1,0x2;189
+	FILL 1,30;190
+	FILL 1,pBlink4Off;191
+	FILL 1,pBlink4Off;192
+	FILL 1,pBlink4Off;193
+	FILL 1,pBlink4Off;194
+	FILL 1,pOn;195
+	FILL 1,pBlink4Off;196
+	FILL 1,pBlink4Off;197
+	FILL 1,pBlink4Off ;198//pBlink4On
+    FILL 1,0x24;199
+	FILL 1,0x0;200
+	FILL 1,30;201
+	FILL 1,pStop;202
+	FILL 1,pStop;203
+	FILL 1,pStop;204
+	FILL 1,pStop;205
+	FILL 1,pOn;206
+	FILL 1,pStop;207
+	FILL 1,pStop;208
+	FILL 1,pStop ;209 //pBlink4Off
+    FILL 1,0x24;210
+	FILL 1,0x2;211
+	FILL 1,200;212
+	FILL 1,goN1;213
+	FILL 1,goN1;214
+	FILL 1,goE1;215
+	FILL 1,goN1;216
+	FILL 1,pOn;217
+	FILL 1,goN1;218
+	FILL 1,goE1;219
+	FILL 1,goN1;220													//pStop
+
+
+		  
+
+
+      ALIGN          
+      AREA    |.text|, CODE, READONLY, ALIGN=2
+      THUMB
+      EXPORT  Start
+      IMPORT  PLL_Init
+
+Start 
+; the DCM.DLL -pCM4 -dLaunchPadDLL debugger setting does NOT grade or simulate traffic
+; the DCM.DLL -pCM4 -dEE319KLab5 debugger setting DOES not test all specifications for EE319K
+; INITIALIZATION
+	
+	
+	LDR R1, =SYSCTL_RCGC2_R; SYSTEM CLOCK FOR PORTS BEF 
+	LDR R2, [R1];
+	;//AND R2,R2,#0;
+	ORR R2,R2,#0X32;
+	STR R2,[R1];
+	NOP
+	NOP
+	
+	LDR R1, =GPIO_PORTE_AMSEL_R; PORT E AMSEL
+	LDR R2, [R1];
+	AND R2,R2,#0X8;
+	;//ORR R2,R2,#0X5;
+	STR R2,[R1];
+	
+	LDR R1, =GPIO_PORTE_PCTL_R; PORT E PCTL
+	LDR R2, [R1];
+	AND R2,R2,#0X00;
+	;//ORR R2,R2,#0X5;
+	STR R2,[R1];
+	
+	LDR R1, =GPIO_PORTE_DIR_R; PORT E DIR
+	LDR R2, [R1];
+	AND R2,R2,#0X8;
+	;//ORR R2,R2,#0X5;
+	STR R2,[R1];
+	
+	LDR R1, =GPIO_PORTE_AFSEL_R; PORT E AFSEL
+	LDR R2, [R1];
+	AND R2,R2,#0X8;
+	;//ORR R2,R2,#0X5;
+	STR R2,[R1];
+	
+	LDR R1, =GPIO_PORTE_DEN_R; PORT E DEN
+	LDR R2, [R1];
+	;//AND R2,R2,#0X8;
+	ORR R2,R2,#0X7;
+	STR R2,[R1];
+	
+	
+	
+	
+	
+	
+	
+	LDR R1, =GPIO_PORTB_AMSEL_R; PORT B AMSEL
+	LDR R2, [R1];
+	AND R2,R2,#0X40;
+	;//ORR R2,R2,#0X5;
+	STR R2,[R1];
+	
+	LDR R1, =GPIO_PORTB_PCTL_R; PORT B PCTL
+	LDR R2, [R1];
+	MOV R2,#0X00;
+	;//ORR R2,R2,#0X5;
+	STR R2,[R1];
+	
+	LDR R1, =GPIO_PORTB_DIR_R; PORT B DIR
+	LDR R2, [R1];
+	;//AND R2,R2,#0X8;
+	ORR R2,R2,#0X3F;
+	STR R2,[R1];
+	
+	LDR R1, =GPIO_PORTB_AFSEL_R; PORT B AFSEL
+	LDR R2, [R1];
+	AND R2,R2,#0X40;
+	;//ORR R2,R2,#0X5;
+	STR R2,[R1];
+	
+	LDR R1, =GPIO_PORTB_DEN_R; PORT B DEN
+	LDR R2, [R1];
+	;//AND R2,R2,#0X8;
+	ORR R2,R2,#0X3F;
+	STR R2,[R1];
+	
+	LDR R1, =GPIO_PORTF_AMSEL_R; PORT F AMSEL
+	LDR R2, [R1];
+	AND R2,R2,#0X5;
+	;//ORR R2,R2,#0X5;
+	STR R2,[R1];
+	
+	LDR R1, =GPIO_PORTF_PCTL_R; PORT F PCTL
+	LDR R2, [R1];
+	MOV R2,#0X00;
+	;//ORR R2,R2,#0X5;
+	STR R2,[R1];
+	
+	LDR R1, =GPIO_PORTF_DIR_R; PORT F DIR
+	LDR R2, [R1];
+	;//AND R2,R2,#0X8;
+	ORR R2,R2,#0XA;
+	STR R2,[R1];
+	
+	LDR R1, =GPIO_PORTF_AFSEL_R; PORT F AFSEL
+	LDR R2, [R1];
+	AND R2,R2,#0X5;
+	;//ORR R2,R2,#0X5;
+	STR R2,[R1];
+	
+	LDR R1, =GPIO_PORTF_DEN_R; PORT F DEN
+	LDR R2, [R1];
+	;//AND R2,R2,#0X8;
+	ORR R2,R2,#0XA;
+	STR R2,[R1];
+
+     BL   PLL_Init    ; running at 80 MHz
+	 
+	 
+	LDR R1, =NVIC_ST_CTRL_R; SYSTICK TIMER INITIALIZATION
+	LDR R2, [R1];
+	AND R2,R2,#0;
+	ORR R2,R2,#0X5;
+	STR R2,[R1];
+	; R5 IS THE POINTER OF WHERE THE STRUCT START IS 
+	LDR R5, =STRUCT;
+	MOV R6,#1;	R6 IS RELATIVE VALUE
+	ADD R5,R5,R6;
+	
+	MOV R7,R5;
+	;ADD R7,R5,R6; R7 IS THE ACTUAL ADRESS
+	;MOV R8,R8,#0; R8 WILL CARRY THE DATA
+	
+	
+	
+	
+	
+loop  
+	
+	LDR R1, =GPIO_PORTB_DATA_R; PORT B DATA
+	LDR R2, [R7]; GETTTING DATA FROM R7 POINTER
+	STR R2,[R1]; STORING IT BACK
+	
+	ADD R7,R7,#1
+	
+	LDR R1, =GPIO_PORTF_DATA_R; PORT F DATA
+	LDR R2, [R7]; GETTTING DATA FROM R7 POINTER
+	STR R2,[R1]; STORING IT BACK
+	
+	ADD R7,R7,#1
+	
+	LDR R0,[R7]; R0 GETS THE MULTIPLE OF 10MS
+	BL SysTick_WAIT10MS;
+	
+	ADD R7,R7,#1;
+	; NOW GOING INTO STAGES TO GET THE INPUT AND CALCULATING THE NEXT STATE
+	LDR R1, =GPIO_PORTE_DATA_R; PORT E DATA
+	LDR R2, [R1]; R2 HAS THE DATA OF INPUTS
+	ADD R7,R7,R2; DONT CHANGE R2 ANYMORE
+	;R7 HAS THE POINTER OF THE ADRESS OF WHERE THE NEXT STAGES ARE
+	
+	LDR R6,[R7]; R2 HAS THE MULTIPLE OF WHERE TO GO NEXT
+	MOV R2,#11;
+	MUL R6,R6,R2;
+	ADD R7,R5,R6;
+	
+
+
+	  B    loop
+	  
+SysTick_Wait
+	;R0 IS THE NUMBER TO PASS FOR THE NUMBER OF DELAY
+	LDR R1,=NVIC_ST_RELOAD_R;
+	LDR R2, [R1];
+	MOV R2,R0; MAKE RELOAD VALUE THE NUMBER PASSES
+	STR R2,[R1];
+	LDR R1,=NVIC_ST_CURRENT_R;
+	LDR R2, [R1];
+	MOV R2,#0; MAKE CURRENT 0
+	STR R2,[R1];
+	LDR R1,=NVIC_ST_CTRL_R; GET THE CONTROLER VALUE
+WAIT_LOOP
+	LDR R2, [R1];
+	AND R2,R2,#0X10000;
+	CMP R2,#0;
+	BNE WAIT_LOOP;
+	BX LR;
+	
+SysTick_WAIT10MS
+	;R0 IS THE NUMBER OF 10MS NEEDED TO WAIT
+	;R1-3 ARE SCRATCH
+	MOV R3,R0;
+	PUSH {LR};
+	CMP R3,#0;
+	BEQ DONE_WAIT10MS
+WAIT10MS_LOOP
+	SUB R3,#1;
+	LDR R0,=NUMBER;
+	BL SysTick_Wait;
+	CMP R3,#0;
+	BNE WAIT10MS_LOOP
+DONE_WAIT10MS
+	POP {PC};
+
+
+      ALIGN          ; make sure the end of this section is aligned
+      END            ; end of file
+      

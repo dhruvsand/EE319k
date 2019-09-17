@@ -1,0 +1,25 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+D:\My Dropbox\EE319K\Exam2_Sum32\Exam2_Sum.uvproj
+Project File Date:  03/25/2013
+
+<h2>Output:</h2>
+Build target 'Exam2'
+compiling main.c...
+assembling Exam2.s...
+linking...
+Program Size: Code=1764 RO-data=1600 RW-data=0 ZI-data=352  
+"Exam2.axf" - 0 Error(s), 0 Warning(s).
+Build target 'Exam2'
+assembling Exam2.s...
+linking...
+Program Size: Code=1764 RO-data=1600 RW-data=0 ZI-data=352  
+"Exam2.axf" - 0 Error(s), 0 Warning(s).
+Build target 'Exam2'
+assembling Exam2.s...
+linking...
+Program Size: Code=1764 RO-data=1600 RW-data=0 ZI-data=352  
+"Exam2.axf" - 0 Error(s), 0 Warning(s).
